@@ -15,6 +15,20 @@ tinymce.init({
   });
   
 
+const eliminarPokemon = async function(){
+  let res = await Swal.fire({
+    title: `Desea enviar el pokemon ${pokemones[this.nro].nombre} al profesor Oak?`,
+    showCancelButton:true,
+    confirmButtonText:'Si,enviar!'
+  });
+  if (res.isConfirmed){
+    pokemones.splice(this.nro,1);
+    cargarTabla();
+    Swal.fire("Pokemon enviado!")
+  } else {
+    Swal.fire("Operacion cancelada");
+  }
+};
 const pokemones =  [];
 const cargarTabla = () =>{
   //Referencia de la tabla
@@ -31,6 +45,9 @@ const cargarTabla = () =>{
     tdNro.innerText = (i+1);
     let tdNombre = document.createElement("td");
     tdNombre.innerText = p.nombre;
+    if (p.legendario){
+      tdNombre.classList.add("text-warning")
+    }
     let tdTipo = document.createElement("td");
 
     let icono = document.createElement("i");
@@ -55,6 +72,14 @@ const cargarTabla = () =>{
     let tdDesc = document.createElement("td");
     tdDesc.innerHTML = p.descripcion;
     let tdAcciones = document.createElement("td");
+
+    let boton = document.createElement("button");
+    boton.classList.add("botn","btn-danger");
+    boton.innerText = "Enviar al profesor Oak";
+    boton.nro = i;
+    boton.addEventListener("click",eliminarPokemon);
+
+    tdAcciones.appendChild(boton);
 
     //Agregar las celdas al tr
     tr.appendChild(tdNro);
@@ -90,3 +115,11 @@ document.querySelector("#registrar-btn").addEventListener("click", ()=>{
     //Titulo, mensaje interno, (succes,info,danger)
     Swal.fire("Exito!","Pokemon Registrado","success");
 });
+
+document.querySelector("#limpiar-btn").addEventListener("click", ()=>{
+  document.querySelector("#nombre-txt").value = "";
+  //document.querySelector("#descripcion-txt").value = "";
+  tinymce.get("descripcion-txt").setContent("");
+  document.querySelector("#legendario-no").checked = true;
+  document.querySelector("#tipo-select").value = "planta";
+})
